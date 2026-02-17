@@ -3,6 +3,11 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import appCss from '../styles.css?url'
 import { SidebarProvider } from '@/components/ui/sidebar'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import '@rainbow-me/rainbowkit/styles.css';
+import { WagmiProvider } from 'wagmi';
+import { config } from '@/lib/utils'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -29,6 +34,8 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
+const queryClient = new QueryClient()
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -36,9 +43,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <SidebarProvider>
-          {children}
-        </SidebarProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <SidebarProvider>
+                {children}
+              </SidebarProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+          
+        </WagmiProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
